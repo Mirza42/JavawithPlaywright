@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright Java Cucumber BDD Tutorial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for code blocks to ensure proper wrapping and background */
+        pre {
+            background-color: #2d2d2d; /* Dark background for code */
+            color: #f8f8f2; /* Light text for code */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto; /* Enable horizontal scrolling for long lines */
+            margin-bottom: 1rem;
+        }
+        code {
+            font-family: 'Fira Code', 'Cascadia Code', monospace; /* Monospace font for code */
+            font-size: 0.9rem;
+            white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+            display: block; /* Ensure block-level for pre-wrap */
+        }
+        /* Inline code styling */
+        :not(pre) > code {
+            background-color: #e0e0e0;
+            color: #c21a02;
+            padding: 0.2em 0.4em;
+            border-radius: 0.3em;
+            font-size: 0.875em;
+        }
+        strong {
+            font-weight: 700; /* Tailwind's font-bold is 700 */
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen bg-gray-100">
+
+    <div id="sidebar" class="w-full md:w-1/4 bg-gray-800 text-white overflow-y-auto p-4 shadow-lg md:rounded-r-lg">
+        <h1 class="text-2xl font-bold mb-6 text-center text-indigo-300">Playwright with Java & Cucumber BDD</h1>
+        <div id="course-navigation">
+            </div>
+    </div>
+
+    <div id="main-content" class="flex-1 overflow-y-auto p-8 bg-white shadow-xl md:rounded-l-lg m-4">
+        <div class="text-center text-gray-600 text-2xl mt-20">
+            Select a lesson from the sidebar to view its content.
+        </div>
+    </div>
+
+    <script>
+        // Course content data structured for easy rendering
+        const courseContent = [
+            {
+                id: 'module1',
+                title: 'Module 1: Introduction & Project Setup',
+                lessons: [
+                    {
+                        id: 'lesson1.1',
+                        title: 'Lesson 1.1: Course Overview and Prerequisites',
+                        objective: 'Understand the course structure, learning objectives, and confirm prerequisites.',
+                        concept: 'This course builds a hybrid test automation framework integrating Playwright, Java, Cucumber BDD, and Allure Reports. It emphasizes a "learn by doing" approach with detailed code examples.',
+                        prerequisites: [
+                            'Microsoft Visual Studio Code: Your preferred IDE for Java development.',
+                            'JDK 21: Java Development Kit, version 21.',
+                            'Maven 3.9.9: Project management and comprehension tool.'
+                        ],
+                        content: ''
+                    },
+                    {
+                        id: 'lesson1.2',
+                        title: 'Lesson 1.2: Brief Installation Guide (Maven & Playwright)',
+                        objective: 'Ensure Maven is correctly configured for Playwright and Cucumber, and set up the basic project structure.',
+                        concept: 'We\'ll verify Maven installation, create a new Maven project, and update the `pom.xml` with necessary dependencies.',
+                        content: `
+**Verify Maven Installation:**
+Open your terminal/command prompt and type:
+\`\`\`bash
+mvn -v
+\`\`\`
+You should see output similar to:
+\`\`\`
+Apache Maven 3.9.9 (...)
+Maven home: ...
+Java version: 21.0.2, vendor: ...
+Java home: ...
+Default locale: ..., platform encoding: ...
+OS name: "windows", version: "10.0", arch: "amd64", family: "windows"
+\`\`\`
+If Maven is not found, ensure it's added to your system's PATH environment variable.
+
+**Create a New Maven Project:**
+Navigate to your desired workspace directory in the terminal and execute the following Maven command to create a new project:
+\`\`\`bash
+mvn archetype:generate \\
+    -DgroupId=com.example.automation \\
+    -DartifactId=playwright-cucumber-framework \\
+    -DarchetypeArtifactId=maven-archetype-quickstart \\
+    -DarchetypeVersion=1.4 \\
+    -DinteractiveMode=false
+\`\`\`
+This creates a basic Maven project structure.
+
+**Open Project in VS Code:**
+Navigate into the newly created project directory:
+\`\`\`bash
+cd playwright-cucumber-framework
+\`\`\`
+Then open it in VS Code:
+\`\`\`bash
+code .
+\`\`\`
+
+**Update pom.xml with Dependencies:**
+We need to add Playwright, Cucumber, JUnit, Allure, and Faker dependencies to your "pom.xml".
+\`\`\`xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.automation</groupId>
+    <artifactId>playwright-cucumber-framework</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <playwright.version>1.44.0</playwright.version>
+        <cucumber.version>7.18.0</cucumber.version>
+        <junit.version>5.10.0</junit.version>
+        <allure.version>2.27.0</allure.version>
+        <allure.cucumber7jvm.version>2.27.0</allure.cucumber7jvm.version>
+        <faker.version>1.0.2</faker.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>"{playwright.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>"{cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>"{cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>"{junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>"{junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright-assertions</artifactId>
+            <version>"{playwright.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>"{allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7jvm</artifactId>
+            <version>"{allure.cucumber7jvm.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>"{faker.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>"{maven.compiler.source}</source>
+                    <target>"{maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <argLine>
+                        -javaagent:""{settings.localRepository}/org/aspectj/aspectjweaver/"{aspectj.version}/aspectjweaver-"{aspectj.version}.jar"
+                        -Dcucumber.options="--plugin io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>"{project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>1.9.22</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.12.0</version>
+                <configuration>
+                    <reportVersion>"{allure.version}</reportVersion>
+                    <resultsDirectory>"{project.build.directory}/allure-results</resultsDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson1.3',
+                        title: 'Lesson 1.3: Basic Playwright Setup (First Browser Launch)',
+                        objective: 'Write a simple Playwright test to launch a browser and navigate to a page, verifying the initial setup.',
+                        concept: 'This lesson confirms Playwright is correctly installed and configured by executing a minimal test.',
+                        content: `
+**Create a "BasicPlaywrightTest.java" (for initial verification):**
+This is a simple JUnit test to confirm Playwright works.
+\`\`\`java
+package com.example.automation.tests;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+/**
+ * This test demonstrates the very basic setup of Playwright:
+ * 1. Initializing Playwright.
+ * 2. Launching a browser (Chromium in this case).
+ * 3. Opening a new page.
+ * 4. Navigating to a URL.
+ * 5. Performing a simple assertion.
+ * 6. Closing the browser and Playwright instance.
+ */
+public class BasicPlaywrightTest {
+
+    private Playwright playwright;
+    private Browser browser;
+    private Page page;
+
+    @BeforeEach
+    public void setUp() {
+        // 1. Initialize Playwright
+        playwright = Playwright.create();
+        System.out.println("Playwright instance created.");
+        // 2. Launch a Chromium browser in non-headless mode (visible UI)
+        //    setHeadless(false) makes the browser UI visible.
+        //    setSlowMo(1000) adds a 1-second delay between each Playwright operation for better observation.
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000));
+        System.out.println("Browser (Chromium) launched.");
+        // 3. Open a new page within the launched browser
+        page = browser.newPage();
+        System.out.println("New page created.");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // 6. Close the browser and Playwright instance to release resources
+        if (browser != null) {
+            browser.close();
+            System.out.println("Browser closed.");
+        }
+        if (playwright != null) {
+            playwright.close();
+            System.out.println("Playwright instance closed.");
+        }
+    }
+
+    /**
+     * Test case: Verify navigation to Google.
+     * Navigates to Google.com and asserts that the page title is "Google".
+     */
+    @Test
+    public void testNavigateToGoogle() {
+        System.out.println("Running testNavigateToGoogle...");
+        // 4. Navigate to Google.com
+        page.navigate("https://www.google.com");
+        System.out.println("Navigated to Google.com");
+
+        // 5. Assert that the page title is "Google"
+        //    PlaywrightAssertions.assertThat provides powerful auto-waiting assertions.
+        assertThat(page).hasTitle("Google");
+        System.out.println("Assertion Passed: Page title is 'Google'.");
+    }
+}
+\`\`\`
+
+**Run the Test:**
+Open the terminal in VS Code (Ctrl+" or View > Terminal) and run:
+\`\`\`bash
+mvn test -Dtest=BasicPlaywrightTest
+\`\`\`
+You should see a Chromium browser window open, navigate to Google, and then close. The console output should indicate the test passed.
+`
+                    }
+                ]
+            },
+            {
+                id: 'module2',
+                title: 'Module 2: Core Framework Foundation',
+                lessons: [
+                    {
+                        id: 'lesson2.1',
+                        title: 'Lesson 2.1: Playwright Manager & Lifecycle',
+                        objective: 'Centralize Playwright instance, browser, and page management within a dedicated class for consistent lifecycle handling.',
+                        concept: 'The `PlaywrightManager` class ensures that Playwright resources are initialized once per test run (or scenario) and properly closed, preventing resource leaks and making tests more robust.',
+                        content: `
+**Create a "PlaywrightManager.java" class:**
+This class will handle the Playwright instance, browser, and page lifecycle. This is the beginning of our "Library Architecture."
+\`\`\`java
+package com.example.automation.framework.driver;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+
+/**
+ * PlaywrightManager class handles the lifecycle of Playwright, Browser, and Page objects.
+ * It ensures that a single instance of Playwright and Browser is maintained for test execution
+ * and that resources are properly initialized and closed.
+ * This is a foundational component of our "Library Architecture."
+ */
+public class PlaywrightManager {
+
+    private static Playwright playwright;
+    private static Browser browser;
+    private static Page page;
+
+    /**
+     * Initializes Playwright, launches a browser (Chromium by default),
+     * and creates a new Page instance.
+     * This method should be called once before all tests or before each scenario.
+     */
+    public static void initializePlaywright() {
+        if (playwright == null) {
+            playwright = Playwright.create();
+            System.out.println("Playwright instance created.");
+        }
+        if (browser == null) {
+            // Launch Chromium in non-headless mode with a slow motion for better observation.
+            //    setHeadless(false) makes the browser UI visible.
+            //    setSlowMo(1000) adds a 1-second delay between each Playwright operation for better observation.
+            browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000));
+            System.out.println("Browser (Chromium) launched.");
+        }
+        // Always create a new page for each test/scenario to ensure isolation.
+        page = browser.newPage();
+        System.out.println("New page created.");
+    }
+
+    /**
+     * Returns the current Playwright Page instance.
+     * @return The Playwright Page object.
+     */
+    public static Page getPage() {
+        if (page == null) {
+            throw new IllegalStateException("Playwright Page is not initialized. Call initializePlaywright() first.");
+        }
+        return page;
+    }
+
+    /**
+     * Closes the current Playwright Page, Browser, and Playwright instance.
+     * This method should be called after all tests or after each scenario to release resources.
+     */
+    public static void closePlaywright() {
+        if (page != null) {
+            page.close();
+            page = null; // Reset page to null
+            System.out.println("Page closed.");
+        }
+        if (browser != null) {
+            browser.close();
+            browser = null; // Reset browser to null
+            System.out.println("Browser closed.");
+        }
+        if (playwright != null) {
+            playwright.close();
+            playwright = null; // Reset playwright to null
+            System.out.println("Playwright instance closed.");
+        }
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson2.2',
+                        title: 'Lesson 2.2: Base Page Implementation',
+                        objective: 'Create a `BasePage` class to encapsulate common functionalities and methods applicable to all Page Objects, promoting reusability.',
+                        concept: 'The `BasePage` serves as a parent class for all other Page Objects, centralizing common interactions like navigation, clicking, filling, and waiting for elements. This is a key part of the Page Object Model and Library Architecture.',
+                        content: `
+**Create "BasePage.java":**
+This will contain common methods applicable to all pages.
+\`\`\`java
+package com.example.automation.framework.pages;
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.options.WaitForSelectorState;
+import io.qameta.allure.Step; // For Allure reporting
+
+/**
+ * BasePage provides common functionalities and methods that can be inherited by all other Page Objects.
+ * This promotes reusability and maintains a clean Page Object Model structure.
+ * It's part of our "Library Architecture" for common UI interactions.
+ */
+public class BasePage {
+    protected final Page page;
+
+    /**
+     * Constructor for BasePage.
+     * @param page The Playwright Page object.
+     */
+    public BasePage(Page page) {
+        this.page = page;
+    }
+
+    /**
+     * Navigates the browser to the specified URL.
+     * @param url The URL to navigate to.
+     */
+    @Step("Navigate to URL: {0}") // Allure step annotation
+    public void navigateTo(String url) {
+        page.navigate(url);
+        System.out.println("Navigated to: " + url);
+    }
+
+    /**
+     * Clicks on a specified locator.
+     * @param locator The Locator object to click.
+     * @param description A description for Allure report.
+     */
+    @Step("Click on: {1}")
+    public void clickElement(Locator locator, String description) {
+        locator.click();
+        System.out.println("Clicked on: " + description);
+    }
+
+    /**
+     * Fills text into a specified locator.
+     * @param locator The Locator object to fill.
+     * @param text The text to enter.
+     * @param description A description for Allure report.
+     */
+    @Step("Fill '{1}' into: {2}")
+    public void fillElement(Locator locator, String text, String description) {
+        locator.fill(text);
+        System.out.println("Filled '" + text + "' into: " + description);
+    }
+
+    /**
+     * Gets the text content of a specified locator.
+     * @param locator The Locator object.
+     * @param description A description for Allure report.
+     * @return The text content.
+     */
+    @Step("Get text from: {1}")
+    public String getElementText(Locator locator, String description) {
+        String text = locator.textContent();
+        System.out.println("Got text '" + text + "' from: " + description);
+        return text;
+    }
+
+    /**
+     * Waits for a locator to be visible.
+     * @param locator The Locator object to wait for.
+     * @param timeout The maximum time to wait in milliseconds.
+     * @param description A description for Allure report.
+     */
+    @Step("Wait for element to be visible: {2}")
+    public void waitForElementVisible(Locator locator, int timeout, String description) {
+        locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE).setTimeout(timeout));
+        System.out.println("Waited for element to be visible: " + description);
+    }
+
+    /**
+     * Checks if a locator is visible.
+     * @param locator The Locator object to check.
+     * @param description A description for Allure report.
+     * @return True if visible, false otherwise.
+     */
+    @Step("Check if element is visible: {1}")
+    public boolean isElementVisible(Locator locator, String description) {
+        boolean visible = locator.isVisible();
+        System.out.println("Element '" + description + "' visibility: " + visible);
+        return visible;
+    }
+
+    /**
+     * Scrolls an element into view.
+     * @param locator The Locator object to scroll.
+     * @param description A description for Allure report.
+     */
+    @Step("Scroll element into view: {1}")
+    public void scrollIntoView(Locator locator, String description) {
+        locator.scrollIntoViewIfNeeded();
+        System.out.println("Scrolled element into view: " + description);
+    }
+
+    /**
+     * Gets the current page title.
+     * @return The page title.
+     */
+    @Step("Get page title")
+    public String getPageTitle() {
+        String title = page.title();
+        System.out.println("Page title: " + title);
+        return title;
+    }
+
+    /**
+     * Gets the current page URL.
+     * @return The page URL.
+     */
+    @Step("Get current page URL")
+    public String getCurrentUrl() {
+        String url = page.url();
+        System.out.println("Current URL: " + url);
+        return url;
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson2.3',
+                        title: 'Lesson 2.3: Common Actions / Library Architecture',
+                        objective: 'Create a dedicated class for common, reusable actions (keywords) that are not specific to a single page, supporting a keyword-driven approach.',
+                        concept: 'A `CommonActions` class abstracts frequently used browser interactions, making step definitions cleaner and promoting reusability across different pages or scenarios. This is a core component of our "Library Architecture".',
+                        content: `
+**Create "CommonActions.java" (Keyword-Driven):**
+\`\`\`java
+package com.example.automation.framework.utilities; // Create 'utilities' package
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator;
+import io.qameta.allure.Step;
+
+/**
+ * This class provides common, reusable actions (keywords) that are not specific to a single page.
+ * It's part of our "Library Architecture" and supports the "Keyword-Driven" approach.
+ * These actions can be used across different step definitions or Page Objects.
+ */
+public class CommonActions {
+    private final Page page;
+
+    public CommonActions(Page page) {
+        this.page = page;
+    }
+
+    /**
+     * Navigates to a specified URL.
+     * @param url The URL to navigate to.
+     */
+    @Step("Navigate to URL: {0}")
+    public void navigateToUrl(String url) {
+        page.navigate(url);
+        System.out.println("Navigated to: " + url);
+    }
+
+    /**
+     * Clicks an element identified by a CSS selector.
+     * @param cssSelector The CSS selector of the element to click.
+     * @param description A description for Allure report.
+     */
+    @Step("Click element by CSS: {0} ({1})")
+    public void clickElementByCss(String cssSelector, String description) {
+        page.locator(cssSelector).click();
+        System.out.println("Clicked element: " + description + " (CSS: " + cssSelector + ")");
+    }
+
+    /**
+     * Fills text into an element identified by a CSS selector.
+     * @param cssSelector The CSS selector of the element to fill.
+     * @param text The text to enter.
+     * @param description A description for Allure report.
+     */
+    @Step("Fill '{1}' into element by CSS: {0} ({2})")
+    public void fillElementByCss(String cssSelector, String text, String description) {
+        page.locator(cssSelector).fill(text);
+        System.out.println("Filled '" + text + "' into element: " + description + " (CSS: " + cssSelector + ")");
+    }
+
+    /**
+     * Gets the text content of an element identified by a CSS selector.
+     * @param cssSelector The CSS selector of the element.
+     * @param description A description for Allure report.
+     * @return The text content.
+     */
+    @Step("Get text from element by CSS: {0} ({1})")
+    public String getTextFromElementByCss(String cssSelector, String description) {
+        String text = page.locator(cssSelector).textContent();
+        System.out.println("Got text '" + text + "' from element: " + description + " (CSS: " + cssSelector + ")");
+        return text;
+    }
+
+    /**
+     * Waits for a specified duration in milliseconds.
+     * Use sparingly, prefer explicit waits (e.g., for element visibility).
+     * @param milliseconds The duration to wait in milliseconds.
+     */
+    @Step("Wait for {0} milliseconds")
+    public void waitFor(int milliseconds) {
+        page.waitForTimeout(milliseconds);
+        System.out.println("Waited for " + milliseconds + "ms.");
+    }
+
+    /**
+     * Takes a screenshot of the current page.
+     * @param path The file path to save the screenshot.
+     */
+    @Step("Take screenshot: {0}")
+    public void takeScreenshot(String path) {
+        page.screenshot(new Page.ScreenshotOptions().setPath(java.nio.file.Paths.get(path)));
+        System.out.println("Screenshot saved to: " + path);
+    }
+
+    /**
+     * Checks if an element identified by a CSS selector is visible.
+     * @param cssSelector The CSS selector of the element.
+     * @param description A description for Allure report.
+     * @return True if visible, false otherwise.
+     */
+    @Step("Check if element by CSS is visible: {0} ({1})")
+    public boolean isElementVisibleByCss(String cssSelector, String description) {
+        boolean visible = page.locator(cssSelector).isVisible();
+        System.out.println("Element '" + description + "' (CSS: " + cssSelector + ") visibility: " + visible);
+        return visible;
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson2.4',
+                        title: 'Lesson 2.4: Custom Assertions & Fail-Fast Strategy',
+                        objective: 'Implement custom assertion methods that immediately stop test execution on failure, providing rapid defect feedback.',
+                        concept: 'A fail-fast strategy ensures that tests stop as soon as an assertion fails, preventing wasted execution time on subsequent steps that would also fail. Custom assertions also integrate with Allure for better reporting.',
+                        content: `
+**Create "CustomAssertions.java":**
+\`\`\`java
+package com.example.automation.framework.utilities;
+
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.Assertions; // Using JUnit's Assertions for simplicity, but can be custom.
+
+/**
+ * This class provides custom assertion methods that implement a "Fail-Fast" strategy.
+ * When an assertion fails, it immediately throws an exception, stopping the test execution,
+ * which is crucial for rapid defect feedback.
+ * These methods also integrate with Allure for better reporting.
+ */
+public class CustomAssertions {
+
+    private final Page page;
+
+    public CustomAssertions(Page page) {
+        this.page = page;
+    }
+
+    /**
+     * Asserts that a locator is visible. If not, it fails immediately.
+     * @param locator The Locator object to check.
+     * @param description A description for Allure report and error message.
+     */
+    @Step("Assert that '{1}' is visible")
+    public void assertThatElementIsVisible(Locator locator, String description) {
+        try {
+            locator.waitFor(); // Playwright's auto-waiting helps here
+            Assertions.assertTrue(locator.isVisible(), "Element '" + description + "' is NOT visible.");
+            System.out.println("Assertion Passed: '" + description + "' is visible.");
+        } catch (Exception e) {
+            // Re-throw to ensure fail-fast behavior
+            System.err.println("Assertion Failed: " + e.getMessage());
+            throw new AssertionError("Fail-Fast: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Asserts that a locator has the expected text. If not, it fails immediately.
+     * @param locator The Locator object to check.
+     * @param expectedText The text expected.
+     * @param description A description for Allure report and error message.
+     */
+    @Step("Assert that '{2}' has text '{1}'")
+    public void assertThatElementHasText(Locator locator, String expectedText, String description) {
+        try {
+            locator.waitFor(); // Playwright's auto-waiting helps here
+            String actualText = locator.textContent();
+            Assertions.assertEquals(expectedText, actualText,
+                    "Element '" + description + "' text mismatch. Expected: '" + expectedText + "', Actual: '" + actualText + "'");
+            System.out.println("Assertion Passed: '" + description + "' has text '" + expectedText + "'.");
+        } catch (Exception e) {
+            System.err.println("Assertion Failed: " + e.getMessage());
+            throw new AssertionError("Fail-Fast: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Asserts that the page title contains the expected text.
+     * @param expectedTitlePart The part of the title expected.
+     */
+    @Step("Assert that page title contains '{0}'")
+    public void assertThatPageTitleContains(String expectedTitlePart) {
+        try {
+            String actualTitle = page.title();
+            Assertions.assertTrue(actualTitle.contains(expectedTitlePart),
+                    "Page title mismatch. Expected to contain: '" + expectedTitlePart + "', Actual: '" + actualTitle + "'");
+            System.out.println("Assertion Passed: Page title contains '" + expectedTitlePart + "'.");
+        } catch (Exception e) {
+            System.err.println("Assertion Failed: " + e.getMessage());
+            throw new AssertionError("Fail-Fast: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Asserts that the page URL is exactly the expected URL.
+     * @param expectedUrl The exact URL expected.
+     */
+    @Step("Assert that page URL is '{0}'")
+    public void assertThatPageUrlIs(String expectedUrl) {
+        try {
+            String actualUrl = page.url();
+            Assertions.assertEquals(expectedUrl, actualUrl,
+                    "Page URL mismatch. Expected: '" + expectedUrl + "', Actual: '" + actualUrl + "'");
+            System.out.println("Assertion Passed: Page URL is '" + expectedUrl + "'.");
+        } catch (Exception e) {
+            System.err.println("Assertion Failed: " + e.getMessage());
+            throw new AssertionError("Fail-Fast: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Asserts that a boolean condition is true.
+     * @param condition The boolean condition to check.
+     * @param message The message to display if the assertion fails.
+     */
+    @Step("Assert that condition is true: {1}")
+    public void assertThatTrue(boolean condition, String message) {
+        try {
+            Assertions.assertTrue(condition, message);
+            System.out.println("Assertion Passed: " + message);
+        } catch (Exception e) {
+            System.err.println("Assertion Failed: " + e.getMessage());
+            throw new AssertionError("Fail-Fast: " + e.getMessage(), e);
+        }
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson2.5',
+                        title: 'Lesson 2.5: Reporting Integration (Allure) & Hooks',
+                        objective: 'Configure Allure for detailed test reporting and use Cucumber Hooks to manage the Playwright lifecycle for each scenario.',
+                        concept: 'Allure provides rich, interactive reports. Cucumber Hooks (`@Before`, `@After`) are crucial for setting up and tearing down the Playwright environment for each test scenario, ensuring isolation and proper resource management. `@Step` annotations enhance Allure reports with detailed step-by-step execution.',
+                        content: `
+**Create a "runners" package: "src/test/java/com/example.automation.framework.runners/"**
+
+**Create "TestRunner.java":**
+\`\`\`java
+package com.example.automation.framework.runners; // Create 'runners' package
+
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+
+/**
+ * This is the Cucumber Test Runner class.
+ * It uses JUnit to run Cucumber feature files.
+ *
+ * @RunWith(Cucumber.class) tells JUnit to run the tests using Cucumber.
+ * @CucumberOptions configures how Cucumber should run:
+ * - features: Specifies the path to the feature files.
+ * - glue: Specifies the package where step definitions are located.
+ * - plugin: Specifies reporting formats (e.g., pretty console output, HTML, JSON, Allure).
+ * - tags: Allows filtering scenarios by tags (e.g., "@smoke", "@regression").
+ * - publish: Publishes a link to the Cucumber Reports service (optional).
+ */
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    features = "src/test/resources/features", // Path to your feature files
+    glue = "com.example.automation.framework.stepdefinitions", // Package where your step definitions are
+    plugin = {
+            "pretty", // Prints Gherkin steps to console
+            "html:target/cucumber-reports/cucumber-html-report.html", // Generates HTML report
+            "json:target/cucumber-reports/cucumber.json", // Generates JSON report
+            "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm" // Allure integration plugin
+    },
+    monochrome = true, // Makes console output more readable
+    publish = false // Set to true to publish reports to Cucumber Reports service
+)
+public class TestRunner {
+    // This class remains empty. It's just a placeholder for the annotations.
+    // Cucumber and JUnit will use these annotations to discover and run the tests.
+}
+\`\`\`
+
+**Create "Hooks.java" (Crucial for managing Playwright lifecycle with Cucumber):**
+\`\`\`java
+package com.example.automation.framework.hooks; // Create 'hooks' package
+
+import com.example.automation.framework.driver.PlaywrightManager;
+import com.microsoft.playwright.Page;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+import io.qameta.allure.Allure; // Import Allure for attachments
+
+import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
+
+/**
+ * This class contains Cucumber Hooks, which are methods that run before or after
+ * scenarios or steps. They are crucial for managing the lifecycle of our Playwright
+ * browser and page instances for each Cucumber scenario.
+ * It also integrates Allure reporting with screenshots on failure.
+ */
+public class Hooks {
+
+    /**
+     * This method runs before each Cucumber scenario.
+     * It initializes the Playwright browser and page for the current scenario.
+     */
+    @Before
+    public void setUp(Scenario scenario) {
+        System.out.println("Starting scenario: " + scenario.getName());
+        PlaywrightManager.initializePlaywright();
+        Allure.step("Playwright initialized for scenario: " + scenario.getName());
+    }
+
+    /**
+     * This method runs after each Cucumber scenario.
+     * It closes the Playwright browser and page, releasing resources.
+     * It also includes screenshot-on-failure logic.
+     */
+    @After
+    public void tearDown(Scenario scenario) {
+        System.out.println("Finishing scenario: " + scenario.getName() + " - Status: " + scenario.getStatus());
+
+        // Attach screenshot on failure
+        if (scenario.isFailed()) {
+            System.out.println("Scenario failed, taking screenshot...");
+            Page page = PlaywrightManager.getPage();
+            if (page != null) {
+                try {
+                    byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+                    Allure.addAttachment("Screenshot on Failure", new ByteArrayInputStream(screenshotBytes));
+                    System.out.println("Screenshot attached to Allure report.");
+                } catch (Exception e) {
+                    System.err.println("Failed to take screenshot: " + e.getMessage());
+                }
+            }
+        }
+
+        PlaywrightManager.closePlaywright();
+        Allure.step("Playwright closed for scenario: " + scenario.getName());
+    }
+}
+\`\`\`
+
+**Run the Cucumber Tests:**
+\`\`\`bash
+mvn clean test
+\`\`\`
+This command will:
+* Clean the target directory.
+* Compile your code.
+* Run the "TestRunner.java" which will execute your Cucumber features.
+* Generate Cucumber HTML and JSON reports in "target/cucumber-reports/".
+* Generate Allure results in "target/allure-results/".
+
+After running, you can generate and serve the Allure report:
+\`\`\`bash
+mvn allure:serve
+\`\`\`
+This will open the Allure report in your default web browser, showing the results of your scenarios.
+`
+                    }
+                ]
+            },
+            {
+                id: 'module3',
+                title: 'Module 3: Page Object Model & Fundamental Interactions',
+                lessons: [
+                    {
+                        id: 'lesson3.1',
+                        title: 'Lesson 3.1: Page Object Model (POM) Introduction',
+                        objective: 'Understand the concept of Page Object Model and how to structure page-specific elements and actions.',
+                        concept: 'POM helps organize code by separating page elements and interactions from test logic, making tests more readable and maintainable. Each web page in your application should have a corresponding Page Object class.',
+                        content: `
+**Create a "LoginPage.java" (Start of Page Object Model):**
+This will represent a simple login page.
+\`\`\`java
+package com.example.automation.framework.pages; // Create 'pages' package
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator; // Import Locator class
+import io.qameta.allure.Step;
+
+/**
+ * Represents the Login Page.
+ * This is the first step towards implementing the Page Object Model (POM).
+ * It encapsulates locators and actions specific to the login functionality.
+ * It extends BasePage to inherit common methods.
+ */
+public class LoginPage extends BasePage {
+    // Locators for elements on the login page (using generic IDs for demonstration)
+    private final Locator usernameInput;
+    private final Locator passwordInput;
+    private final Locator loginButton;
+    private final Locator errorMessage;
+
+    /**
+     * Constructor for LoginPage.
+     * @param page The Playwright Page object associated with this page.
+     */
+    public LoginPage(Page page) {
+        super(page); // Call super constructor to pass the page
+        // Initialize locators
+        this.usernameInput = page.locator("#username");
+        this.passwordInput = page.locator("#password");
+        this.loginButton = page.locator("#loginButton");
+        this.errorMessage = page.locator(".error-message");
+    }
+
+    /**
+     * Fills the username field.
+     * @param username The username to enter.
+     */
+    @Step("Enter username: {0}")
+    public void enterUsername(String username) {
+        fillElement(usernameInput, username, "Username Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Fills the password field.
+     * @param password The password to enter.
+     */
+    @Step("Enter password") // Avoid logging sensitive data
+    public void enterPassword(String password) {
+        fillElement(passwordInput, password, "Password Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the login button.
+     */
+    @Step("Click login button")
+    public void clickLoginButton() {
+        clickElement(loginButton, "Login Button"); // Using BasePage method
+    }
+
+    /**
+     * Performs a login action.
+     * @param username The username.
+     * @param password The password.
+     */
+    @Step("Perform login with username: {0}")
+    public void login(String username, String password) {
+        enterUsername(username);
+        enterPassword(password);
+        clickLoginButton();
+        System.out.println("Attempted login with username: " + username);
+    }
+
+    /**
+     * Gets the text of the error message.
+     * @return The error message text.
+     */
+    @Step("Get login error message")
+    public String getErrorMessage() {
+        return getElementText(errorMessage, "Error Message"); // Using BasePage method
+    }
+
+    /**
+     * Checks if the error message is visible.
+     * @return True if error message is visible, false otherwise.
+     */
+    @Step("Check if error message is visible")
+    public boolean isErrorMessageVisible() {
+        return isElementVisible(errorMessage, "Error Message"); // Using BasePage method
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson3.2',
+                        title: 'Lesson 3.2: Locators and Basic Actions',
+                        objective: 'Learn various ways to locate elements and perform common actions like clicking, typing, and filling forms using Playwright.',
+                        concept: 'Playwright provides robust locators (e.g., CSS, XPath, text, role) to find elements on a page. Actions are methods (e.g., `click()`, `fill()`, `type()`) to interact with these elements.',
+                        content: `
+**Create a "LoginActionsTest.java" (Demonstrates Locators & Actions):**
+This test will use the "LoginPage" to interact with elements on a simulated login page.
+\`\`\`java
+package com.example.automation.tests;
+
+import com.example.automation.framework.driver.PlaywrightManager;
+import com.example.automation.framework.pages.LoginPage;
+import com.microsoft.playwright.Page;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+/**
+ * This test demonstrates how to use Playwright locators and actions
+ * through a simulated login page example.
+ * It showcases filling text fields, clicking buttons, and basic assertions.
+ */
+public class LoginActionsTest {
+
+    private Page page;
+    private LoginPage loginPage;
+
+    // Simulated HTML content for the login page (simplified for display)
+    private static final String LOGIN_PAGE_URL = "data:text/html,..."; // Full content is a simulated HTML page for local testing.
+
+    @BeforeEach
+    public void setUp() {
+        PlaywrightManager.initializePlaywright();
+        page = PlaywrightManager.getPage();
+        loginPage = new LoginPage(page);
+        // In actual execution, this would be the full data:text/html string
+        loginPage.navigateTo("data:text/html,<div style='font-family: Inter; text-align: center; margin-top: 50px;'>" +
+            "<h2 style='color: #333;'>Login Page</h2>" +
+            "<form>" +
+            "  <label for='username' style='display: block; margin-bottom: 5px; font-weight: bold;'>Username:</label>" +
+            "  <input type='text' id='username' name='username' style='padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; width: 200px;'><br>" +
+            "  <label for='password' style='display: block; margin-bottom: 5px; font-weight: bold;'>Password:</label>" +
+            "  <input type='password' id='password' name='password' style='padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; width: 200px;'><br>" +
+            "  <button type='submit' id='loginButton' style='background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;'>Login</button>" +
+            "</form>" +
+            "<div class='error-message' style='color: red; margin-top: 20px; display: none;'>Invalid credentials!</div>" +
+            "<div class='success-message' style='color: green; margin-top: 20px; display: none;'>Login successful!</div>" +
+            "<script>" +
+            "  document.getElementById('loginButton').addEventListener('click', function(event) {" +
+            "    event.preventDefault();" +
+            "    var username = document.getElementById('username').value;" +
+            "    var password = document.getElementById('password').value;" +
+            "    var errorMessage = document.querySelector('.error-message');" +
+            "    var successMessage = document.querySelector('.success-message');" +
+            "    errorMessage.style.display = 'none';" +
+            "    successMessage.style.display = 'none';" +
+            "    if (username === 'testuser' && password === 'testpass') {" +
+            "      successMessage.style.display = 'block';" +
+            "      // Simulate navigation to dashboard after successful login" +
+            "      window.location.href = 'data:text/html," +
+            "        <div style=\"font-family: Inter; text-align: center; margin-top: 50px;\">" +
+            "          <h2 style=\"color: #333;\">Dashboard</h2>" +
+            "          <p id=\"welcomeMessage\" style=\"font-size: 18px; color: #555;\">Welcome, testuser!</p>" +
+            "          <input type=\"text\" id=\"searchInput\" placeholder=\"Search...\" style=\"padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px; width: 250px;\">" +
+            "          <button id=\"searchButton\" style=\"background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;\">Search</button><br>" +
+            "          <a href=\"#\" id=\"logoutLink\" style=\"display: block; margin-top: 20px; color: #dc3545; text-decoration: none;\">Logout</a>" +
+            "        </div>';" +
+            "    } else {" +
+            "      errorMessage.style.display = 'block';" +
+            "    }" +
+            "  });" +
+            "</1script>" +
+            "</div>");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        PlaywrightManager.closePlaywright();
+    }
+
+    /**
+     * Test case: Successful Login on simulated page.
+     * Uses valid credentials ("testuser", "testpass") and asserts success message.
+     */
+    @Test
+    public void testSuccessfulLogin() {
+        System.out.println("Running testSuccessfulLogin...");
+        loginPage.login("testuser", "testpass");
+
+        // Assert that the success message is visible
+        assertThat(page.locator(".success-message")).isVisible();
+        assertThat(page.locator(".success-message")).hasText("Login successful!");
+        System.out.println("Login successful and success message displayed.");
+    }
+
+    /**
+     * Test case: Failed Login on simulated page.
+     * Enters invalid credentials and asserts for an error message.
+     */
+    @Test
+    public void testFailedLogin() {
+        System.out.println("Running testFailedLogin...");
+        loginPage.login("wronguser", "wrongpass");
+
+        // Assert that the error message is visible and has the correct text
+        assertThat(loginPage.isErrorMessageVisible()).isTrue();
+        assertThat(loginPage.getErrorMessage()).isEqualTo("Invalid credentials!");
+        System.out.println("Invalid credentials error message displayed.");
+    }
+
+    /**
+     * Test case: Verify input field presence.
+     * Asserts that the username and password input fields are visible.
+     */
+    @Test
+    public void testInputFieldsAreVisible() {
+        System.out.println("Running testInputFieldsAreVisible...");
+        assertThat(page.locator("#username")).isVisible();
+        assertThat(page.locator("#password")).isVisible();
+        System.out.println("Username and Password fields are visible.");
+    }
+}
+\`\`\`
+
+**Run the Tests:**
+Open the terminal in VS Code (Ctrl+" or View > Terminal) and run:
+\`\`\`bash
+mvn test -Dtest=LoginActionsTest
+\`\`\`
+Observe the browser interacting with the simulated login page and the test results in the console.
+`
+                    },
+                    {
+                        id: 'lesson3.3',
+                        title: 'Lesson 3.3: Playwright Assertions in Practice',
+                        objective: 'Understand how to use Playwright\'s built-in assertions for verifying element states and content effectively.',
+                        concept: 'Playwright provides \\`assertThat\\` methods for robust assertions, including auto-waiting capabilities that automatically wait for elements to be in a certain state before asserting. This reduces the need for explicit waits and makes tests more reliable.',
+                        content: `
+Playwright's "assertThat" methods are powerful and should be used extensively. We've already seen some in "LoginActionsTest.java". Here's a recap of common assertions:
+
+* "assertThat(locator).isVisible()"
+* "assertThat(locator).hasText("Expected Text")"
+* "assertThat(page).hasTitle("Expected Title")"
+* "assertThat(page).hasURL("https://example.com/expected-url")"
+* "assertThat(locator).isEnabled()"
+* "assertThat(locator).isChecked()"
+* "assertThat(locator).hasValue("Expected Value")"
+
+These assertions are "auto-waiting," meaning Playwright will automatically wait for the element to satisfy the assertion condition (up to a default timeout) before failing. This is a significant advantage for writing reliable tests.
+
+You can add more assertions to "LoginActionsTest.java" to practice. For example, after a successful login, you might assert the URL or a specific element on the next page.
+`
+                    },
+                    {
+                        id: 'lesson3.4',
+                        title: 'Lesson 3.4: Extending POM with Dashboard Page',
+                        objective: 'Reinforce the concept of Page Object Model by creating a Page Object for a subsequent page and demonstrating navigation between them.',
+                        concept: 'As your application grows, you\'ll create Page Objects for each distinct page. Tests will then navigate between these Page Objects, calling methods on them to simulate user flows.',
+                        content: `
+**Create a "DashboardPage.java":**
+This will represent a page after successful login.
+\`\`\`java
+package com.example.automation.framework.pages;
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator;
+import io.qameta.allure.Step;
+
+/**
+ * Represents the Dashboard Page, extending BasePage for common functionalities.
+ * This continues the Page Object Model (POM) implementation,
+ * encapsulating elements and actions specific to the dashboard.
+ */
+public class DashboardPage extends BasePage { // Extend BasePage
+    // Locators for elements on the dashboard page
+    public final Locator welcomeMessage; // Made public for direct assertion in steps
+    public final Locator logoutLink; // Made public for direct assertion in steps
+    public final Locator searchInput;
+    public final Locator searchButton;
+
+    /**
+     * Constructor for DashboardPage.
+     * @param page The Playwright Page object associated with this page.
+     */
+    public DashboardPage(Page page) {
+        super(page); // Call super constructor to pass the page
+        // Initialize locators
+        this.welcomeMessage = page.locator("#welcomeMessage");
+        this.logoutLink = page.locator("#logoutLink");
+        this.searchInput = page.locator("#searchInput");
+        this.searchButton = page.locator("#searchButton");
+    }
+
+    // Actions specific to DashboardPage, now using BasePage methods where applicable
+
+    /**
+     * Gets the text of the welcome message.
+     * @return The welcome message text.
+     */
+    @Step("Get welcome message text")
+    public String getWelcomeMessage() {
+        return getElementText(welcomeMessage, "Welcome Message"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the logout link.
+     */
+    @Step("Click logout link")
+    public void clickLogout() {
+        clickElement(logoutLink, "Logout Link"); // Using BasePage method
+    }
+
+    /**
+     * Enters text into the search input field.
+     * @param searchText The text to enter.
+     */
+    @Step("Enter search text: {0}")
+    public void enterSearchText(String searchText) {
+        fillElement(searchInput, searchText, "Search Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the search button.
+     */
+    @Step("Click search button")
+    public void clickSearchButton() {
+        clickElement(searchButton, "Search Button"); // Using BasePage method
+    }
+
+    /**
+     * Performs a search operation.
+     * @param searchText The text to search for.
+     */
+    @Step("Perform search for: {0}")
+    public void performSearch(String searchText) {
+        enterSearchText(searchText);
+        clickSearchButton();
+        System.out.println("Performed search for: " + searchText);
+    }
+
+    /**
+     * Checks if the welcome message is visible.
+     * @return True if welcome message is visible, false otherwise.
+     */
+    @Step("Check if welcome message is visible")
+    public boolean isWelcomeMessageVisible() {
+        return isElementVisible(welcomeMessage, "Welcome Message"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the hamburger menu button to open the sidebar.
+     */
+    @Step("Open Hamburger Menu")
+    public void openHamburgerMenu() {
+        // Assuming a generic hamburger menu locator if not already defined
+        Locator hamburgerMenuButton = page.locator("#react-burger-menu-btn"); // Example locator for Sauce Labs
+        clickElement(hamburgerMenuButton, "Hamburger Menu Button");
+    }
+}
+\`\`\`
+
+**Create a "NavigationTest.java" (Demonstrates POM and Navigation):**
+This test will simulate login and then navigate to the dashboard.
+\`\`\`java
+package com.example.automation.tests;
+
+import com.example.automation.framework.driver.PlaywrightManager;
+import com.example.automation.framework.pages.DashboardPage;
+import com.example.automation.framework.pages.LoginPage;
+import com.microsoft.playwright.Page;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+/**
+ * This test demonstrates navigation between different Page Objects
+ * and verifies elements on the subsequent page after an action (like login).
+ * It reinforces the Page Object Model structure.
+ */
+public class NavigationTest {
+
+    private Page page;
+    private LoginPage loginPage;
+    private DashboardPage dashboardPage;
+
+    // Simulated HTML content for the login page (simplified for display)
+    private static final String LOGIN_PAGE_URL = "data:text/html,..."; // Full content is a simulated HTML page for local testing.
+
+    @BeforeEach
+    public void setUp() {
+        PlaywrightManager.initializePlaywright();
+        page = PlaywrightManager.getPage();
+        loginPage = new LoginPage(page);
+        dashboardPage = new DashboardPage(page); // Initialize dashboard page object
+        // In actual execution, this would be the full data:text/html string
+        loginPage.navigateTo("data:text/html,<div style='font-family: Inter; text-align: center; margin-top: 50px;'>" +
+            "<h2 style='color: #333;'>Login Page</h2>" +
+            "<form>" +
+            "  <label for='username' style='display: block; margin-bottom: 5px; font-weight: bold;'>Username:</label>" +
+            "  <input type='text' id='username' name='username' style='padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; width: 200px;'><br>" +
+            "  <label for='password' style='display: block; margin-bottom: 5px; font-weight: bold;'>Password:</label>" +
+            "  <input type='password' id='password' name='password' style='padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; width: 200px;'><br>" +
+            "  <button type='submit' id='loginButton' style='background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;'>Login</button>" +
+            "</form>" +
+            "<div class='error-message' style='color: red; margin-top: 20px; display: none;'>Invalid credentials!</div>" +
+            "<div class='success-message' style='color: green; margin-top: 20px; display: none;'>Login successful!</div>" +
+            "<script>" 
+            "  document.getElementById('loginButton').addEventListener('click', function(event) {" +
+            "    event.preventDefault();" +
+            "    var username = document.getElementById('username').value;" +
+            "    var password = document.getElementById('password').value;" +
+            "    var errorMessage = document.querySelector('.error-message');" +
+            "    var successMessage = document.querySelector('.success-message');" +
+            "    errorMessage.style.display = 'none';" +
+            "    successMessage.style.display = 'none';" +
+            "    if (username === 'testuser' && password === 'testpass') {" +
+            "      // Simulate navigation to dashboard after successful login" +
+            "      window.location.href = 'data:text/html," +
+            "        <div style=\"font-family: Inter; text-align: center; margin-top: 50px;\">" +
+            "          <h2 style=\"color: #333;\">Dashboard</h2>" +
+            "          <p id=\"welcomeMessage\" style=\"font-size: 18px; color: #555;\">Welcome, testuser!</p>" +
+            "          <input type=\"text\" id=\"searchInput\" placeholder=\"Search...\" style=\"padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px; width: 250px;\">" +
+            "          <button id=\"searchButton\" style=\"background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;\">Search</button><br>" +
+            "          <a href=\"#\" id=\"logoutLink\" style=\"display: block; margin-top: 20px; color: #dc3545; text-decoration: none;\">Logout</a>" +
+            "        </div>';" +
+            "    } else {" +
+            "      errorMessage.style.display = 'block';" +
+            "    }" +
+            "  });" 
+            "</1script>" +
+            "</div>");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        PlaywrightManager.closePlaywright();
+    }
+
+    /**
+     * Test case: Verify successful login and navigation to dashboard.
+     * Logs in with valid credentials and asserts that the dashboard's welcome message is visible.
+     */
+    @Test
+    public void testLoginAndNavigateToDashboard() {
+        System.out.println("Running testLoginAndNavigateToDashboard...");
+        loginPage.login("testuser", "testpass");
+
+        // After successful login, the page should navigate to the dashboard content.
+        // Assert that the welcome message on the dashboard is visible and correct.
+        assertThat(dashboardPage.isWelcomeMessageVisible()).isTrue();
+        assertThat(dashboardPage.getWelcomeMessage()).contains("Welcome, testuser!");
+        System.out.println("Successfully logged in and navigated to dashboard.");
+    }
+}
+\`\`\`
+
+**Run the Test:**
+Open the terminal in VS Code (Ctrl+" or View > Terminal) and run:
+\`\`\`bash
+mvn test -Dtest=NavigationTest
+\`\`\`
+Observe the simulated login and subsequent navigation to the dashboard.
+`
+                    },
+                    {
+                        id: 'lesson3.5',
+                        title: 'Lesson 3.5: Enhancing Page Objects with BasePage (Refinement)',
+                        objective: 'Refine `LoginPage` and `DashboardPage` to extend `BasePage`, demonstrating how to leverage common functionalities.',
+                        concept: 'By extending `BasePage`, Page Objects can reuse common methods for interactions and assertions, reducing code duplication and improving maintainability. This solidifies the Page Object Model within the framework.',
+                        content: `
+Now that we have "BasePage", let's update our existing Page Objects to inherit from it. This will make them cleaner and more consistent.
+
+**Update "LoginPage.java" to extend "BasePage":**
+\`\`\`java
+package com.example.automation.framework.pages;
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator;
+import io.qameta.allure.Step;
+
+/**
+ * Represents the Login Page, now extending BasePage for common functionalities.
+ * This enhances the Page Object Model by promoting code reuse.
+ */
+public class LoginPage extends BasePage { // Extend BasePage
+    // Locators for elements on the login page
+    private final Locator usernameInput;
+    private final Locator passwordInput;
+    private final Locator loginButton;
+    public final Locator errorMessage; // Made public for direct assertion in steps
+
+    /**
+     * Constructor for LoginPage.
+     * @param page The Playwright Page object associated with this page.
+     */
+    public LoginPage(Page page) {
+        super(page); // Call super constructor to pass the page
+        // Initialize locators using Playwright's page.locator() method
+        this.usernameInput = page.locator("#username");
+        this.passwordInput = page.locator("#password");
+        this.loginButton = page.locator("#loginButton");
+        this.errorMessage = page.locator(".error-message");
+    }
+
+    // Actions specific to LoginPage, now using BasePage methods where applicable
+
+    /**
+     * Fills the username field.
+     * @param username The username to enter.
+     */
+    @Step("Enter username: {0}")
+    public void enterUsername(String username) {
+        fillElement(usernameInput, username, "Username Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Fills the password field.
+     * @param password The password to enter.
+     */
+    @Step("Enter password") // Avoid logging sensitive data
+    public void enterPassword(String password) {
+        fillElement(passwordInput, password, "Password Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the login button.
+     */
+    @Step("Click login button")
+    public void clickLoginButton() {
+        clickElement(loginButton, "Login Button"); // Using BasePage method
+    }
+
+    /**
+     * Performs a login action.
+     * @param username The username.
+     * @param password The password.
+     */
+    @Step("Perform login with username: {0}")
+    public void login(String username, String password) {
+        enterUsername(username);
+        enterPassword(password);
+        clickLoginButton();
+        System.out.println("Attempted login with username: " + username);
+    }
+
+    /**
+     * Gets the text of the error message.
+     * @return The error message text.
+     */
+    @Step("Get login error message")
+    public String getErrorMessage() {
+        return getElementText(errorMessage, "Error Message"); // Using BasePage method
+    }
+
+    /**
+     * Checks if the error message is visible.
+     * @return True if error message is visible, false otherwise.
+     */
+    @Step("Check if error message is visible")
+    public boolean isErrorMessageVisible() {
+        return isElementVisible(errorMessage, "Error Message"); // Using BasePage method
+    }
+}
+\`\`\`
+
+**Update "DashboardPage.java" to extend "BasePage":**
+\`\`\`java
+package com.example.automation.framework.pages;
+
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator;
+import io.qameta.allure.Step;
+
+/**
+ * Represents the Dashboard Page, now extending BasePage for common functionalities.
+ * This continues the Page Object Model (POM) implementation,
+ * encapsulating elements and actions specific to the dashboard.
+ */
+public class DashboardPage extends BasePage { // Extend BasePage
+    // Locators for elements on the dashboard page
+    public final Locator welcomeMessage; // Made public for direct assertion in steps
+    public final Locator logoutLink; // Made public for direct assertion in steps
+    public final Locator searchInput;
+    public final Locator searchButton;
+
+    /**
+     * Constructor for DashboardPage.
+     * @param page The Playwright Page object associated with this page.
+     */
+    public DashboardPage(Page page) {
+        super(page); // Call super constructor to pass the page
+        // Initialize locators
+        this.welcomeMessage = page.locator("#welcomeMessage");
+        this.logoutLink = page.locator("#logoutLink");
+        this.searchInput = page.locator("#searchInput");
+        this.searchButton = page.locator("#searchButton");
+    }
+
+    // Actions specific to DashboardPage, now using BasePage methods where applicable
+
+    /**
+     * Gets the text of the welcome message.
+     * @return The welcome message text.
+     */
+    @Step("Get welcome message text")
+    public String getWelcomeMessage() {
+        return getElementText(welcomeMessage, "Welcome Message"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the logout link.
+     */
+    @Step("Click logout link")
+    public void clickLogout() {
+        clickElement(logoutLink, "Logout Link"); // Using BasePage method
+    }
+
+    /**
+     * Enters text into the search input field.
+     * @param searchText The text to enter.
+     */
+    @Step("Enter search text: {0}")
+    public void enterSearchText(String searchText) {
+        fillElement(searchInput, searchText, "Search Input Field"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the search button.
+     */
+    @Step("Click search button")
+    public void clickSearchButton() {
+        clickElement(searchButton, "Search Button"); // Using BasePage method
+    }
+
+    /**
+     * Performs a search operation.
+     * @param searchText The text to search for.
+     */
+    @Step("Perform search for: {0}")
+    public void performSearch(String searchText) {
+        enterSearchText(searchText);
+        clickSearchButton();
+        System.out.println("Performed search for: " + searchText);
+    }
+
+    /**
+     * Checks if the welcome message is visible.
+     * @return True if welcome message is visible, false otherwise.
+     */
+    @Step("Check if welcome message is visible")
+    public boolean isWelcomeMessageVisible() {
+        return isElementVisible(welcomeMessage, "Welcome Message"); // Using BasePage method
+    }
+
+    /**
+     * Clicks the hamburger menu button to open the sidebar.
+     */
+    @Step("Open Hamburger Menu")
+    public void openHamburgerMenu() {
+        // Assuming a generic hamburger menu locator if not already defined
+        Locator hamburgerMenuButton = page.locator("#react-burger-menu-btn"); // Example locator for Sauce Labs
+        clickElement(hamburgerMenuButton, "Hamburger Menu Button");
+    }
+}
+\`\`\`
+`
+                    }
+                ]
+            },
+            {
+                id: 'module4',
+                title: 'Module 4: Behavior-Driven Development (BDD) with Cucumber',
+                lessons: [
+                    {
+                        id: 'lesson4.1',
+                        title: 'Lesson 4.1: Gherkin Syntax and Feature Files',
+                        objective: 'Learn to write `.feature` files using Gherkin syntax (Given, When, Then) for human-readable test scenarios.',
+                        concept: 'Gherkin is a business-readable, domain-specific language that allows non-technical stakeholders to understand and contribute to test scenarios. Feature files describe the "what" of the test, while step definitions describe the "how".',
+                        content: `
+**Create a "features" directory: "src/test/resources/features/"**
+
+**Create "Login.feature":**
+\`\`\`gherkin
+# src/test/resources/features/Login.feature
+
+Feature: User Login Functionality on Sauce Labs
+
+  As a user, I want to be able to log in to the Sauce Labs application
+  So that I can access the products inventory
+
+  Scenario: Successful login with valid credentials
+    Given I am on the Sauce Labs login page
+    When I enter "standard_user" as username and "secret_sauce" as password
+    And I click the login button
+    Then I should be redirected to the products inventory page
+    And I should see the "Products" title
+
+  Scenario Outline: Unsuccessful login with invalid credentials
+    Given I am on the Sauce Labs login page
+    When I enter "<username>" as username and "<password>" as password
+    And I click the login button
+    Then I should see an error message containing "<error_message>"
+
+    Examples:
+      | username         | password       | error_message                               |
+      | locked_out_user  | secret_sauce   | Sorry, this user has been locked out.       |
+      | problem_user     | wrong_password | Username and password do not match any user in this service |
+      | invalid_user     | invalid_pass   | Username and password do not match any user in this service |
+
+  Scenario: Logout from the application
+    Given I am logged in as "standard_user" with password "secret_sauce"
+    When I open the hamburger menu
+    And I click the logout link
+    Then I should be redirected to the Sauce Labs login page
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson4.2',
+                        title: 'Lesson 4.2: Step Definitions',
+                        objective: 'Connect the Gherkin steps in \\`.feature\\` files to Java methods using annotations, leveraging Page Objects and Common Actions.',
+                        concept: 'Step definitions are the glue between your human-readable scenarios and your automation code. Each Gherkin step (Given, When, Then, And, But) is mapped to a Java method using Cucumber annotations.',
+                        content: `
+**Create a "stepdefinitions" package: "src/test/java/com/example.automation.framework.stepdefinitions/"**
+
+**Create "LoginSteps.java":**
+\`\`\`java
+package com.example.automation.framework.stepdefinitions;
+
+import com.example.automation.framework.driver.PlaywrightManager;
+import com.example.automation.framework.pages.DashboardPage;
+import com.example.automation.framework.pages.LoginPage;
+import com.example.automation.framework.utilities.CommonActions;
+import com.example.automation.framework.utilities.CustomAssertions; // Import CustomAssertions
+import com.microsoft.playwright.Page;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
+/**
+ * This class contains the step definitions for the Login functionality on Sauce Labs,
+ * now incorporating CustomAssertions for a Fail-Fast strategy.
+ */
+public class LoginSteps {
+
+    private Page page = PlaywrightManager.getPage();
+    private LoginPage loginPage = new LoginPage(page);
+    private DashboardPage dashboardPage = new DashboardPage(page);
+    private CommonActions commonActions = new CommonActions(page);
+    private CustomAssertions assertions = new CustomAssertions(page); // Initialize CustomAssertions
+
+    private static final String SAUCE_DEMO_URL = "https://www.saucedemo.com/";
+    private static final String SAUCE_DEMO_INVENTORY_URL = "https://www.saucedemo.com/inventory.html";
+
+    @Given("I am on the Sauce Labs login page")
+    public void iAmOnTheSauceLabsLoginPage() {
+        commonActions.navigateToUrl(SAUCE_DEMO_URL);
+        assertions.assertThatPageTitleContains("Swag Labs"); // Using custom assertion
+    }
+
+    @When("I enter {string} as username and {string} as password")
+    public void iEnterUsernameAndPassword(String username, String password) {
+        loginPage.enterUsername(username);
+        loginPage.enterPassword(password);
+    }
+
+    @And("I click the login button")
+    public void iClickTheLoginButton() {
+        loginPage.clickLoginButton();
+    }
+
+    @Then("I should be redirected to the products inventory page")
+    public void iShouldBeRedirectedToTheProductsInventoryPage() {
+        assertions.assertThatPageUrlIs(SAUCE_DEMO_INVENTORY_URL); // Using custom assertion
+        System.out.println("Redirected to products inventory page.");
+    }
+
+    @And("I should see the {string} title")
+    public void iShouldSeeTheTitle(String expectedTitle) {
+        // NOTE: dashboardPage.productsTitle is not defined in DashboardPage.java.
+        // Assuming you meant to check the page title or a specific element on the dashboard.
+        // For this example, I'll assume it's checking the page title.
+        // If 'Products' is an element, you'd need to add a locator for it in DashboardPage.
+        assertions.assertThatPageTitleContains(expectedTitle); // Using custom assertion on page title
+        System.out.println("Products title verified: Page title contains '" + expectedTitle + "'");
+    }
+
+    @Then("I should see an error message containing {string}")
+    public void iShouldSeeAnErrorMessageContaining(String expectedErrorMessage) {
+        assertions.assertThatTrue(loginPage.isErrorMessageVisible(), "Login error message should be visible."); // Using custom assertion
+        assertions.assertThatElementHasText(loginPage.errorMessage, expectedErrorMessage, "Error Message"); // Using custom assertion
+        System.out.println("Error message verified: '" + loginPage.getErrorMessage() + "' contains '" + expectedErrorMessage + "'");
+    }
+
+    @Given("I am logged in as {string} with password {string}")
+    public void iAmLoggedInAsWithPassword(String username, String password) {
+        iAmOnTheSauceLabsLoginPage();
+        iEnterUsernameAndPassword(username, password);
+        iClickTheLoginButton();
+        iShouldBeRedirectedToTheProductsInventoryPage();
+        iShouldSeeTheTitle("Products");
+    }
+
+    @When("I open the hamburger menu")
+    public void iOpenTheHamburgerMenu() {
+        dashboardPage.openHamburgerMenu();
+    }
+
+    @And("I click the logout link")
+    public void iClickTheLogoutLink() {
+        dashboardPage.clickLogout();
+    }
+}
+\`\`\`
+`
+                    },
+                    {
+                        id: 'lesson4.3',
+                        title: 'Lesson 4.3: Running Cucumber Tests',
+                        objective: 'Configure and execute your Cucumber tests using the Test Runner class.',
+                        concept: 'The `TestRunner` class acts as the entry point for Cucumber tests, allowing you to specify feature file locations, step definition packages, and reporting formats. Running tests via Maven triggers this runner.',
+                        content: `
+**Run the Cucumber Tests:**
+\`\`\`bash
+mvn clean test
+\`\`\`
+This command will:
+* Clean the target directory.
+* Compile your code.
+* Run the "TestRunner.java" which will execute your Cucumber features.
+* Generate Cucumber HTML and JSON reports in "target/cucumber-reports/".
+* Generate Allure results in "target/allure-results/".
+
+After running, you can generate and serve the Allure report:
+\`\`\`bash
+mvn allure:serve
+\`\`\`
+This will open the Allure report in your default web browser, showing the results of your scenarios.
+`
+                    }
+                ]
+            },
+            {
+                id: 'module5',
+                title: 'Module 5: Advanced Utilities & Data Management',
+                lessons: [
+                    {
+                        id: 'lesson5.1',
+                        title: 'Lesson 5.1: Dynamic Test Data Generation with Faker',
+                        objective: 'Generate dynamic and realistic test data using the Faker library to reduce reliance on static data.',
+                        concept: 'Faker helps create unique data (names, emails, addresses, etc.) on the fly, reducing reliance on static test data and preventing data collision issues, especially in concurrent test runs.',
+                        content: `
+**Add Faker dependency to "pom.xml" (already done in initial setup).**
+
+**Create a "UserFactory.java":**
+\`\`\`java
+package com.example.automation.framework.utilities;
+
+import com.github.javafaker.Faker;
+import io.qameta.allure.Step;
+
+/**
+ * This class demonstrates generating dynamic and realistic test data using the Faker library.
+ * It's part of our "Library Architecture" for test data management.
+ * Faker helps create unique data on the fly, reducing reliance on static test data.
+ */
+public class UserFactory {
+
+    private static final Faker faker = new Faker();
+
+    /**
+     * Generates a random full name.
+     * @return A random full name.
+     */
+    @Step("Generate random full name")
+    public static String generateFullName() {
+        String fullName = faker.name().fullName();
+        System.out.println("Generated full name: " + fullName);
+        return fullName;
+    }
+
+    /**
+     * Generates a random email address.
+     * @return A random email address.
+     */
+    @Step("Generate random email address")
+    public static String generateEmail() {
+        String email = faker.internet().emailAddress();
+        System.out.println("Generated email: " + email);
+        return email;
+    }
+
+    /**
+     * Generates a random password.
+     * @return A random password.
+     */
+    @Step("Generate random password")
+    public static String generatePassword() {
+        // Simple password generation. Can be enhanced for complexity.
+        String password = faker.internet().password(8, 12, true, true, true);
+        System.out.println("Generated password."); // Avoid logging sensitive data
+        return password;
+    }
+
+    /**
+     * Generates a random username.
+     * @return A random username.
+     */
+    @Step("Generate random username")
+    public static String generateUsername() {
+        String username = faker.name().username();
+        System.out.println("Generated username: " + username);
+        return username;
+    }
+
+    // You can add more methods to generate other types of data as needed.
+    // e.g., addresses, phone numbers, product names, etc.
+}
+\`\`\`
+
+**Create a new feature file "DataGeneration.feature" to demonstrate Faker:**
+\`\`\`gherkin
+# src/test/resources/features/DataGeneration.feature
+
+Feature: Dynamic Test Data Generation
+
+  As a test automation engineer, I want to generate dynamic test data
+  So that I can use unique data for each test run
+
+  Scenario: Generate and log dynamic user data
+    When I generate a random full name
+    And I generate a random email address
+    And I generate a random username
+    And I generate a random password
+    Then the generated data should be logged
+\`\`\`
+
+**Create "DataGenerationSteps.java":**
+\`\`\`java
+package com.example.automation.framework.stepdefinitions;
+
+import com.example.automation.framework.utilities.UserFactory; // Import UserFactory
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.qameta.allure.Step;
+
+/**
+ * This class contains step definitions for demonstrating dynamic test data generation
+ * using the Faker library.
+ */
+public class DataGenerationSteps {
+
+    private String generatedFullName;
+    private String generatedEmail;
+    private String generatedUsername;
+    private String generatedPassword;
+
+    @When("I generate a random full name")
+    public void iGenerateARandomFullName() {
+        generatedFullName = UserFactory.generateFullName();
+    }
+
+    @And("I generate a random email address")
+    public void iGenerateARandomEmailAddress() {
+        generatedEmail = UserFactory.generateEmail();
+    }
+
+    @And("I generate a random username")
+    public void iGenerateARandomUsername() {
+        generatedUsername = UserFactory.generateUsername();
+    }
+
+    @And("I generate a random password")
+    public void iGenerateARandomPassword() {
+        generatedPassword = UserFactory.generatePassword();
+    }
+
+    @Then("the generated data should be logged")
+    @Step("Verify generated data is logged")
+    public void theGeneratedDataShouldBeLogged() {
+        System.out.println("--- Generated Data Summary ---");
+        System.out.println("Full Name: " + generatedFullName);
+        System.out.println("Email: " + generatedEmail);
+        System.out.println("Username: " + generatedUsername);
+        System.out.println("Password: [Hidden for security]"); // Do not log actual password
+        System.out.println("----------------------------");
+        // In a real scenario, you might assert that these are non-null or match certain patterns.
+        // For demonstration, logging is sufficient.
+    }
+}
+\`\`\`
+
+**Update "TestRunner.java" to ensure it picks up "DataGenerationSteps":**
+(No change needed if glue points to the parent package "com.example.automation.framework.stepdefinitions")
+`
+                    },
+                    {
+                        id: 'lesson5.2',
+                        title: 'Lesson 5.2: Test Data Setup/Teardown',
+                        objective: 'Use Cucumber Hooks (`@Before`, `@After`) to manage test data before and after scenarios, ensuring test isolation.',
+                        concept: 'Test data setup and teardown are crucial for creating isolated and repeatable tests. By performing these operations within `@Before` and `@After` hooks, each test scenario runs in a clean, predictable state, preventing data dependencies and flakiness.',
+                        content: `
+**Update "Hooks.java" to include data setup/teardown (simulated):**
+\`\`\`java
+package com.example.automation.framework.hooks;
+
+import com.example.automation.framework.driver.PlaywrightManager;
+import com.microsoft.playwright.Page;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+import io.qameta.allure.Allure; // Import Allure for attachments
+
+import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
+
+/**
+ * This class contains Cucumber Hooks for managing Playwright lifecycle,
+ * and now includes simulated test data setup/teardown.
+ */
+public class Hooks {
+
+    /**
+     * This method runs before each Cucumber scenario.
+     * It initializes the Playwright browser and page for the current scenario.
+     * Also includes a simulated data setup step.
+     */
+    @Before
+    public void setUp(Scenario scenario) {
+        System.out.println("Starting scenario: " + scenario.getName());
+        PlaywrightManager.initializePlaywright();
+        // Simulate test data setup
+        System.out.println("Performing test data setup for scenario: " + scenario.getName());
+        // In a real scenario, this might involve API calls to create a user,
+        // database operations to set up specific records, etc.
+        Allure.step("Simulated: Test data setup completed.");
+    }
+
+    /**
+     * This method runs after each Cucumber scenario.
+     * It closes the Playwright browser and page, releasing resources.
+     * It also includes screenshot-on-failure logic and simulated data teardown.
+     */
+    @After
+    public void tearDown(Scenario scenario) {
+        System.out.println("Finishing scenario: " + scenario.getName() + " - Status: " + scenario.getStatus());
+
+        // Attach screenshot on failure
+        if (scenario.isFailed()) {
+            System.out.println("Scenario failed, taking screenshot...");
+            Page page = PlaywrightManager.getPage();
+            if (page != null) {
+                try {
+                    byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+                    Allure.addAttachment("Screenshot on Failure", new ByteArrayInputStream(screenshotBytes));
+                    System.out.println("Screenshot attached to Allure report.");
+                } catch (Exception e) { // Corrected syntax here
+                    System.err.println("Failed to take screenshot: " + e.getMessage());
+                }
+            }
+        }
+
+        // Simulate test data teardown
+        System.out.println("Performing test data teardown for scenario: " + scenario.getName());
+        // In a real scenario, this might involve API calls to delete a user,
+        // database operations to clean up records, etc.
+        Allure.step("Simulated: Test data teardown completed.");
+
+        PlaywrightManager.closePlaywright();
+    }
+}
+\`\`\`
+
+**Run the Tests:**
+\`\`\`bash
+mvn clean test
+mvn allure:serve
+\`\`\`
+Observe the "Simulated: Test data setup/teardown" steps in the Allure report.
+`
+                    },
+                    {
+                        id: 'lesson5.3',
+                        title: 'Lesson 5.3: Automatic Screenshot on Failure',
+                        objective: 'Automatically capture screenshots when a test scenario fails, providing visual context for debugging.',
+                        concept: 'Screenshots are invaluable for debugging failed tests, offering a visual snapshot of the application\'s state at the moment of failure. Integrating this into Cucumber Hooks ensures every failure is documented with a screenshot.',
+                        content: `
+**Implement screenshot logic in "Hooks.java" (already done in 5.2).**
+
+To demonstrate, let's intentionally make a test fail.
+**Modify "Login.feature" to expect a wrong message for a successful login scenario:**
+\`\`\`gherkin
+# src/test/resources/features/Login.feature
+
+Feature: User Login Functionality on Sauce Labs
+
+  As a user, I want to be able to log in to the Sauce Labs application
+  So that I can access the products inventory
+
+  Scenario: Successful login with valid credentials (will fail for screenshot demo)
+    Given I am on the Sauce Labs login page
+    When I enter "standard_user" as username and "secret_sauce" as password
+    And I click the login button
+    Then I should be redirected to the products inventory page
+    And I should see the "Wrong Title" title # INTENTIONALLY WRONG FOR FAILURE
+
+  Scenario Outline: Unsuccessful login with invalid credentials
+    Given I am on the Sauce Labs login page
+    When I enter "<username>" as username and "<password>" as password
+    And I click the login button
+    Then I should see an error message containing "<error_message>"
+
+    Examples:
+      | username         | password       | error_message                               |
+      | locked_out_user  | secret_sauce   | Sorry, this user has been locked out.       |
+      | problem_user     | wrong_password | Username and password do not match any user in this service |
+      | invalid_user     | invalid_pass   | Username and password do not match any user in this service |
+
+  Scenario: Logout from the application
+    Given I am logged in as "standard_user" with password "secret_sauce"
+    When I open the hamburger menu
+    And I click the logout link
+    Then I should be redirected to the Sauce Labs login page
+\`\`\`
+
+**Run the Tests:**
+\`\`\`bash
+mvn clean test
+\`\`\`
+Open the Allure report. The "Successful login" scenario should now be marked as failed. Click on it, and you should see a "Screenshot on Failure" attachment. Remember to revert the "Login.feature" file to its correct state ("And I should see the "Products" title") after this demonstration.
+`
+                    }
+                ]
+            },
+            {
+                id: 'module6',
+                title: 'Module 6: Best Practices & CI/CD Concepts',
+                lessons: [
+                    {
+                        id: 'lesson6.1',
+                        title: 'Lesson 6.1: Git and Version Control',
+                        objective: 'Understand the importance of Git for managing your automation framework code.',
+                        concept: 'Git is a distributed version control system that allows you to track changes, collaborate with teams, and revert to previous versions if needed. It\'s fundamental for any software development project, including test automation frameworks.',
+                        content: `
+**Action:**
+Initialize a Git repository in your project root:
+\`\`\`bash
+git init
+\`\`\`
+Add your files:
+\`\`\`bash
+git add .
+\`\`\`
+Make your first commit:
+\`\`\`bash
+git commit -m "Initial framework setup"
+\`\`\`
+(Further steps would involve setting up a remote repository like GitHub/GitLab/Bitbucket and pushing your code).
+`
+                    },
+                    {
+                        id: 'lesson6.2',
+                        title: 'Lesson 6.2: SonarQube for Code Quality',
+                        objective: 'Briefly understand how SonarQube helps maintain code quality in your automation framework.',
+                        concept: 'SonarQube performs static code analysis to identify bugs, vulnerabilities, and code smells, ensuring your automation code is clean, maintainable, and robust. It helps enforce coding standards and best practices.',
+                        content: `
+**Action:** (This is typically set up on a CI/CD server)
+1.  Install SonarQube locally or use a cloud instance.
+2.  Configure your "pom.xml" with the SonarQube Maven plugin (if not already done).
+3.  Run "mvn clean verify sonar:sonar" to analyze your code.
+`
+                    },
+                    {
+                        id: 'lesson6.3',
+                        title: 'Lesson 6.3: CI/CD Integration Concepts',
+                        objective: 'Understand how this framework fits into a Continuous Integration/Continuous Deployment (CI/CD) pipeline.',
+                        concept: 'Automating test execution in a CI/CD pipeline ensures that every code change is immediately validated, providing fast feedback to developers and preventing defects from reaching production. This integration is key to a robust DevOps strategy.',
+                        content: `
+**Discussion Points:**
+* **Triggering Tests:** Tests can be triggered automatically on every code commit or pull request.
+* **Environment Setup:** Ensuring the CI/CD environment has JDK, Maven, Playwright browsers, and necessary dependencies.
+* **Reporting Integration:** Publishing Allure reports to a web server or integrating with CI/CD dashboards.
+* **Notifications:** Sending notifications (e.g., Slack, email) on test failures.
+`
+                    }
+                ]
+            }
+        ];
+
+        let selectedLesson = courseContent[0].lessons[0]; // Initialize with the first lesson
+
+        // Helper to escape HTML entities within content that should be displayed as raw text (e.g., code blocks)
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Helper function to convert regular text (outside code blocks) to HTML
+        function convertTextToHtml(plainText) {
+            let html = plainText;
+
+            // Handle bold text
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // Handle inline code (single backticks) - assuming ` is escaped as \` in the source
+            html = html.replace(/\\`(.*?)\\`/g, '<code>$1</code>');
+
+            // Replace newlines with <br/> for basic line breaks in regular text
+            html = html.replace(/\n/g, '<br/>');
+
+            return html;
+        }
+
+        function renderMarkdown(markdownText) {
+            const codeBlockRegex = /```(java|bash|xml|gherkin)\n([\s\S]*?)\n```/g;
+            let lastIndex = 0;
+            let resultHtml = [];
+            let match;
+
+            // Iterate through all code block matches
+            while ((match = codeBlockRegex.exec(markdownText)) !== null) {
+                const [fullMatch, lang, codeContent] = match;
+                const startIndex = match.index;
+                const endIndex = codeBlockRegex.lastIndex;
+
+                // Add the text before the current code block (and convert its newlines to <br/>)
+                const precedingText = markdownText.substring(lastIndex, startIndex);
+                resultHtml.push(convertTextToHtml(precedingText));
+
+                // Add the code block HTML (newlines are preserved within <pre><code>)
+                resultHtml.push(`<pre><code class="language-${lang}">${escapeHtml(codeContent)}</code></pre>`);
+
+                lastIndex = endIndex;
+            }
+
+            // Add any remaining text after the last code block
+            const remainingText = markdownText.substring(lastIndex);
+            resultHtml.push(convertTextToHtml(remainingText));
+
+            return resultHtml.join('');
+        }
+
+        function displayLesson(lesson) {
+            selectedLesson = lesson;
+            const mainContentDiv = document.getElementById('main-content');
+            let contentHtml = '';
+
+            if (lesson) {
+                contentHtml = `
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-6 border-b-4 border-indigo-500 pb-2">
+                        ${lesson.title}
+                    </h2>
+
+                    <div class="mb-8 p-6 bg-indigo-50 rounded-lg shadow-inner">
+                        <h3 class="text-2xl font-bold text-indigo-700 mb-3">Objective:</h3>
+                        <p class="text-gray-800 text-lg">${lesson.objective}</p>
+                    </div>
+
+                    <div class="mb-8 p-6 bg-blue-50 rounded-lg shadow-inner">
+                        <h3 class="text-2xl font-bold text-blue-700 mb-3">Concept:</h3>
+                        <p class="text-gray-800 text-lg">${lesson.concept}</p>
+                    </div>
+                `;
+
+                if (lesson.prerequisites && lesson.prerequisites.length > 0) {
+                    contentHtml += `
+                        <div class="mb-8 p-6 bg-green-50 rounded-lg shadow-inner">
+                            <h3 class="text-2xl font-bold text-green-700 mb-3">Prerequisites:</h3>
+                            <ul class="list-disc list-inside text-gray-800 text-lg">
+                                ${lesson.prerequisites.map(prereq => `<li>${prereq}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                if (lesson.content) {
+                    contentHtml += `
+                        <div class="mb-8 p-6 bg-gray-50 rounded-lg shadow-inner">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3">Content:</h3>
+                            <div class="prose max-w-none text-gray-800 text-lg">
+                                ${renderMarkdown(lesson.content)}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                contentHtml = `
+                    <div class="text-center text-gray-600 text-2xl mt-20">
+                        Select a lesson from the sidebar to view its content.
+                    </div>
+                `;
+            }
+            mainContentDiv.innerHTML = contentHtml; // Update the content
+            updateActiveLessonButton(); // Update active button styling
+        }
+
+        function updateActiveLessonButton() {
+            // Remove 'active' class from all buttons
+            document.querySelectorAll('#course-navigation button').forEach(button => {
+                button.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                button.classList.add('hover:bg-gray-700', 'text-gray-300');
+            });
+
+            // Add 'active' class to the currently selected lesson's button
+            const activeButton = document.querySelector(`button[data-lesson-id="${selectedLesson.id}"]`);
+            if (activeButton) {
+                activeButton.classList.remove('hover:bg-gray-700', 'text-gray-300');
+                activeButton.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            }
+        }
+
+        // Function to build the sidebar navigation
+        function buildNavigation() {
+            const navContainer = document.getElementById('course-navigation');
+            navContainer.innerHTML = ''; // Clear existing content
+
+            courseContent.forEach(module => {
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'mb-6';
+                moduleDiv.innerHTML = `<h2 class="text-xl font-semibold mb-3 text-indigo-200">${module.title}</h2>`;
+
+                const lessonList = document.createElement('ul');
+                module.lessons.forEach(lesson => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'mb-2';
+                    const button = document.createElement('button');
+                    button.className = 'block w-full text-left p-2 rounded-md transition-colors duration-200';
+                    button.textContent = lesson.title;
+                    button.setAttribute('data-lesson-id', lesson.id); // Store lesson ID for selection
+                    button.onclick = () => displayLesson(lesson);
+                    listItem.appendChild(button);
+                    lessonList.appendChild(listItem);
+                });
+                moduleDiv.appendChild(lessonList);
+                navContainer.appendChild(moduleDiv);
+            });
+            // Display the first lesson and set its button as active on initial load
+            displayLesson(courseContent[0].lessons[0]);
+        }
+
+        // Initialize the navigation and display the first lesson when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', buildNavigation);
+
+    </script>
+</body>
+</html>
